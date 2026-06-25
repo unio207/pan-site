@@ -192,6 +192,15 @@
     .social-name   { font-weight: 600; font-size: 0.93rem; }
     .social-handle { font-size: 0.78rem; color: var(--muted); }
     .social-arrow  { color: var(--muted); font-size: 1rem; }
+    .success-msg {
+      display: none;
+      padding: 13px 16px;
+      background: #e8f3e0;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: var(--forest);
+      text-align: center;
+    }
     footer {
       position: relative;
       z-index: 1;
@@ -216,10 +225,11 @@
     <div class="glass-section">
       <p class="brand-line">Your food has a story. Be the first to find it.</p>
       <span class="section-label">Join the waitlist</span>
-      <form class="waitlist-form" action="https://pan-waitlist.beehiiv.com/subscribe" method="POST" target="_blank">
-        <input type="email" name="email" placeholder="your@email.com" required autocomplete="email" />
-        <button type="submit">Get early access &rarr;</button>
+      <form class="waitlist-form" id="waitlist-form">
+        <input type="email" name="email" id="email-input" placeholder="your@email.com" required autocomplete="email" />
+        <button type="submit" id="submit-btn">Get early access &rarr;</button>
       </form>
+      <div class="success-msg" id="success-msg">You&rsquo;re on the list! We&rsquo;ll be in touch soon. &#x1F33F;</div>
     </div>
     <div class="glass-section">
       <span class="section-label">Follow along</span>
@@ -254,5 +264,36 @@
     </div>
   </div>
   <footer>Pan&#x2122; 2025. All rights reserved.</footer>
+  <script>
+    const form = document.getElementById('waitlist-form');
+    const btn  = document.getElementById('submit-btn');
+    const msg  = document.getElementById('success-msg');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email-input').value;
+      btn.disabled = true;
+      btn.textContent = 'Joining...';
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        if (res.ok) {
+          form.style.display = 'none';
+          msg.style.display = 'block';
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Get early access →';
+          alert('Something went wrong. Please try again.');
+        }
+      } catch {
+        btn.disabled = false;
+        btn.textContent = 'Get early access →';
+        alert('Something went wrong. Please try again.');
+      }
+    });
+  </script>
 </body>
 </html>
+
