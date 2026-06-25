@@ -10,21 +10,16 @@ export default async function handler(req, res) {
   }
   const { email } = body || {};
 
-  console.log('email:', email, 'type:', typeof email);
-
   if (!email || typeof email !== 'string') {
     return res.status(400).json({ error: 'Email is required' });
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  console.log('regex pass:', emailRegex.test(email), 'length:', email.length);
   if (!emailRegex.test(email) || email.length > 254) {
     return res.status(400).json({ error: 'Invalid email' });
   }
 
   const apiKey = process.env.BEEHIIV_API_KEY;
   const pubId  = process.env.BEEHIIV_PUB_ID;
-
-  console.log('apiKey set:', !!apiKey, 'pubId set:', !!pubId);
 
   if (!apiKey || !pubId) {
     return res.status(500).json({ error: 'Server misconfiguration' });
@@ -49,8 +44,7 @@ export default async function handler(req, res) {
 
     if (!beehiivRes.ok) {
       const err = await beehiivRes.json().catch(() => ({}));
-      console.log('beehiiv status:', beehiivRes.status, 'error:', JSON.stringify(err));
-      return res.status(beehiivRes.status).json({ error: err.message || 'Subscription failed' });
+return res.status(beehiivRes.status).json({ error: err.message || 'Subscription failed' });
     }
 
     return res.status(200).json({ success: true });
