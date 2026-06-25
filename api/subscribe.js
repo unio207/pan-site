@@ -4,6 +4,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  console.log('content-type:', req.headers['content-type']);
+  console.log('body type:', typeof req.body);
+  console.log('body:', JSON.stringify(req.body));
+
   let body = req.body;
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch { body = {}; }
