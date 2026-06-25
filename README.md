@@ -1,6 +1,6 @@
 # Pan — Marketing Site
 
-Waitlist + linktree page for [Pan](https://eatwithpan.com).
+Waitlist + linktree page for [Pan](pan-site-psi.vercel.app).
 
 Built with React + Fraunces/DM Sans. Deployed on Vercel.
 
