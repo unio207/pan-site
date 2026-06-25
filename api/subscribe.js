@@ -4,7 +4,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email } = req.body;
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch { body = {}; }
+  }
+  const { email } = body || {};
 
   // Basic server-side email validation
   if (!email || typeof email !== 'string') {
