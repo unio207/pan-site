@@ -49,6 +49,7 @@ export default async function handler(req, res) {
 
     if (!beehiivRes.ok) {
       const err = await beehiivRes.json().catch(() => ({}));
+      console.log('beehiiv status:', beehiivRes.status, 'error:', JSON.stringify(err));
       return res.status(beehiivRes.status).json({ error: err.message || 'Subscription failed' });
     }
 
