@@ -1,7 +1,29 @@
+// In-memory rate limit: max 5 requests per IP per 10 minutes
+// Not perfect across serverless instances but provides basic protection
+const rateLimit = new Map();
+const WINDOW_MS = 10 * 60 * 1000;
+const MAX_REQUESTS = 5;
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const entry = rateLimit.get(ip);
+  if (!entry || now - entry.start > WINDOW_MS) {
+    rateLimit.set(ip, { count: 1, start: now });
+    return false;
+  }
+  if (entry.count >= MAX_REQUESTS) return true;
+  entry.count++;
+  return false;
+}
+
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || 'unknown';
+  if (isRateLimited(ip)) {
+    return res.status(429).json({ error: 'Too many requests' });
   }
 
   let body = req.body;
@@ -22,7 +44,7 @@ export default async function handler(req, res) {
   const pubId  = process.env.BEEHIIV_PUB_ID;
 
   if (!apiKey || !pubId) {
-    return res.status(500).json({ error: 'Server misconfiguration' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 
   try {
@@ -43,8 +65,9 @@ export default async function handler(req, res) {
     );
 
     if (!beehiivRes.ok) {
-      const err = await beehiivRes.json().catch(() => ({}));
-return res.status(beehiivRes.status).json({ error: err.message || 'Subscription failed' });
+      // Don't leak Beehiiv's internal status codes — return generic errors only
+      const status = beehiivRes.status >= 500 ? 502 : 400;
+      return res.status(status).json({ error: 'Subscription failed' });
     }
 
     return res.status(200).json({ success: true });

@@ -192,6 +192,16 @@
     .social-name   { font-weight: 600; font-size: 0.93rem; }
     .social-handle { font-size: 0.78rem; color: var(--muted); }
     .social-arrow  { color: var(--muted); font-size: 1rem; }
+    .error-msg {
+      display: none;
+      padding: 10px 16px;
+      background: #fdecea;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: #b71c1c;
+      text-align: center;
+      margin-top: 8px;
+    }
     .success-msg {
       display: none;
       padding: 13px 16px;
@@ -229,6 +239,7 @@
         <input type="email" name="email" id="email-input" placeholder="your@email.com" required autocomplete="email" />
         <button type="submit" id="submit-btn">Get early access &rarr;</button>
       </form>
+      <div class="error-msg" id="error-msg">Something went wrong. Please try again.</div>
       <div class="success-msg" id="success-msg">You&rsquo;re on the list! We&rsquo;ll be in touch soon. &#x1F33F;</div>
     </div>
     <div class="glass-section">
@@ -285,7 +296,7 @@
         } else {
           btn.disabled = false;
           btn.textContent = 'Get early access →';
-          alert('Something went wrong. Please try again.');
+          document.getElementById('error-msg').style.display = 'block';
         }
       } catch {
         btn.disabled = false;
@@ -296,4 +307,5 @@
   </script>
 </body>
 </html>
+
 
